@@ -79,18 +79,34 @@
 
   @keyframes subir { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: reduce) { .hero, .dormir, .coluna { animation: none; } }
+
+  .comprar-fundo { position: fixed; inset: 0; background: rgba(8, 8, 9, 0.82); backdrop-filter: blur(6px);
+                   display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 10; }
+  .comprar-fundo[hidden] { display: none; }
+  .comprar-cartao { background: var(--superficie); border: 1px solid var(--borda); max-width: 420px; width: 100%;
+                    padding: 32px; animation: subir 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .comprar-cartao h2 { font-size: 28px; font-weight: 800; letter-spacing: -0.01em; margin: 8px 0 16px; }
+  .comprar-nota { font-size: 15px; margin-bottom: 8px; }
+  .comprar-nota strong { font-family: 'Fragment Mono', monospace; color: var(--verde); }
+  .comprar-estado { min-height: 20px; margin: 16px 0 20px; font-size: 14px; color: var(--mudo); }
+  .comprar-botoes { display: flex; gap: 12px; }
+  .btn-comprar { flex: 1; background: var(--verde); color: #08130d; border: 0; padding: 14px; font-size: 15px;
+                 font-weight: 700; font-family: inherit; cursor: pointer; }
+  .btn-comprar:disabled { opacity: 0.5; cursor: default; }
+  .btn-passar { flex: 0 0 auto; background: transparent; color: var(--mudo); border: 1px solid var(--borda);
+                padding: 14px 20px; font-size: 15px; font-family: inherit; cursor: pointer; }
 </style>
 </head>
 <body>
   <header class="topo">
     <h1>SONAR</h1>
-    <span class="modo">FANTASMA · 18:14</span>
+    <span class="modo">FANTASMA · 18:19</span>
   </header>
   
     <section class="hero">
       <p class="rotulo">O que terias agora — dinheiro a fingir, preços a sério</p>
-      <p class="gigante num desce">99,49 €</p>
-      <p class="sub">começou com 100,00 € · −0,51 €</p>
+      <p class="gigante num desce">99,45 €</p>
+      <p class="sub">começou com 100,00 € · −0,55 €</p>
     </section>
 
     <article class="coluna">
@@ -99,7 +115,7 @@
       <h2>A tua carteira</h2>
       <p class="legenda">compra uns minutos depois do alerta, como reagirias, e vende sozinha — é esta que conta para o exame</p>
     </header>
-    <p class="total num desce" hidden>99,49 €</p>
+    <p class="total num desce" hidden>99,45 €</p>
     <dl>
       <div><dt>Por gastar</dt><dd class="num">2,41 €</dd></div>
       <div class="cofre"><dt>Cofre — nunca volta a jogar</dt><dd class="num">5,62 €</dd></div>
@@ -152,19 +168,19 @@
   </tr><tr>
     <td>Pup family <span class="mudo">B</span></td>
     <td class="num">10,00 €</td>
-    <td class="num">9,17 €</td>
+    <td class="num">9,16 €</td>
     <td class="num desce">−8%</td>
     <td></td>
   </tr><tr>
     <td>the capybara pup <span class="mudo">B</span></td>
     <td class="num">10,00 €</td>
-    <td class="num">9,14 €</td>
+    <td class="num">9,13 €</td>
     <td class="num desce">−9%</td>
     <td></td>
   </tr><tr>
     <td>Kaito The Yapybara <span class="mudo">B</span></td>
     <td class="num">10,00 €</td>
-    <td class="num">9,27 €</td>
+    <td class="num">9,26 €</td>
     <td class="num desce">−7%</td>
     <td></td>
   </tr></tbody>
@@ -172,7 +188,10 @@
   </article>
 
 
-    
+    <section class="pendentes">
+            <span class="marcador">//02</span><h2>Compras a caminho</h2>
+            <ul><li>Cat on Pole <span class="mudo">B · compra sozinho depois de 23/07, 18:34</span></li></ul>
+          </section>
 
     <section class="exame">
       <span class="marcador">//03</span>
@@ -181,5 +200,50 @@
       <div class="barra"><div style="width:14.3%"></div></div>
     </section>
   <footer class="rodape">gerado pelo radar · actualiza sozinho a cada 5 minutos · fecha e abre quando quiseres</footer>
+  <div id="comprar-fundo" class="comprar-fundo" hidden>
+    <section class="comprar-cartao">
+      <span class="marcador">//comprar</span>
+      <h2 id="c-nome">—</h2>
+      <p class="comprar-nota">Nota do radar: <strong id="c-nota">—</strong>/100</p>
+      <p class="mudo">Quantos bons sinais estao alinhados agora — 60+ vale a pena, 85+ e forte. A decisao e tua.</p>
+      <p id="c-estado" class="comprar-estado"></p>
+      <div class="comprar-botoes">
+        <button id="c-confirmar" class="btn-comprar">Confirmar compra</button>
+        <button id="c-passar" class="btn-passar">Passar</button>
+      </div>
+    </section>
+  </div>
+  <script>
+  (function () {
+    var TOPICO = 'sonar-comprar-fpx-4qv7zk9wm2hd8tjr3ycn6b';
+    var p = new URLSearchParams(location.search);
+    var mint = p.get('comprar');
+    if (!mint) return;
+    var nome = p.get('nome') || mint.slice(0, 6);
+    var gaveta = p.get('gaveta') === 'A' ? 'A' : 'B';
+    var nota = parseInt(p.get('nota') || '60', 10);
+    var fundo = document.getElementById('comprar-fundo');
+    document.getElementById('c-nome').textContent = nome;
+    document.getElementById('c-nota').textContent = isNaN(nota) ? '—' : nota;
+    fundo.hidden = false;
+    function fechar() { fundo.hidden = true; history.replaceState(null, '', location.pathname); }
+    document.getElementById('c-passar').onclick = fechar;
+    document.getElementById('c-confirmar').onclick = function () {
+      var btn = this, estado = document.getElementById('c-estado');
+      btn.disabled = true;
+      estado.textContent = 'A enviar o pedido e a verificar a cotacao ao vivo...';
+      fetch('https://ntfy.sh/' + TOPICO, {
+        method: 'POST',
+        body: JSON.stringify({ mint: mint, nome: nome, gaveta: gaveta, nota: nota }),
+      }).then(function () {
+        estado.textContent = 'Pedido enviado. Vais receber no telemovel: comprei, ou ja passou.';
+        btn.textContent = 'Enviado';
+      }).catch(function () {
+        estado.textContent = 'Nao deu para enviar. Tenta outra vez.';
+        btn.disabled = false;
+      });
+    };
+  })();
+  </script>
 </body>
 </html>
