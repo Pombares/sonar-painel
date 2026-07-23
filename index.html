@@ -100,7 +100,7 @@
 <body>
   <header class="topo">
     <h1>SONAR</h1>
-    <span class="modo">FANTASMA · 21:28</span>
+    <span class="modo">FANTASMA · 21:33</span>
   </header>
   
     <section class="hero">
@@ -139,6 +139,7 @@
       <span class="marcador">//comprar</span>
       <h2 id="c-nome">—</h2>
       <p class="comprar-nota">Nota do radar: <strong id="c-nota">—</strong>/100</p>
+      <p class="comprar-nota">Vou comprar: <strong id="c-eur">—</strong></p>
       <p class="mudo">Quantos bons sinais estao alinhados agora — 60+ vale a pena, 85+ e forte. A decisao e tua.</p>
       <p id="c-estado" class="comprar-estado"></p>
       <div class="comprar-botoes">
@@ -150,6 +151,10 @@
   <script>
   (function () {
     var TOPICO = 'sonar-comprar-fpx-4qv7zk9wm2hd8tjr3ycn6b';
+    // A aposta cresce com a nota (a escada da conviccao vem do config), travada
+    // no teto da gaveta — assim o ecra diz o valor REAL que vai ser comprado.
+    var ESCADA = [{"nota":85,"eur":22},{"nota":75,"eur":15},{"nota":65,"eur":10},{"nota":0,"eur":6}];
+    var TETOS = {"A":0,"B":25};
     var p = new URLSearchParams(location.search);
     var mint = p.get('comprar');
     if (!mint) return;
@@ -159,6 +164,11 @@
     var fundo = document.getElementById('comprar-fundo');
     document.getElementById('c-nome').textContent = nome;
     document.getElementById('c-nota').textContent = isNaN(nota) ? '—' : nota;
+    var degrau = ESCADA.slice()
+      .sort(function (a, b) { return b.nota - a.nota; })
+      .find(function (d) { return nota >= d.nota; });
+    var eur = Math.min(degrau ? degrau.eur : 0, TETOS[gaveta] || 0);
+    document.getElementById('c-eur').textContent = eur.toFixed(2).replace('.', ',') + ' €';
     fundo.hidden = false;
     function fechar() { fundo.hidden = true; history.replaceState(null, '', location.pathname); }
     document.getElementById('c-passar').onclick = fechar;
