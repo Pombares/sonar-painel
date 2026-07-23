@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="300">
+<title>SONAR — carteira fantasma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;800&family=Fragment+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fundo: #0c0c0d; --superficie: #121214; --borda: #1f1f23;
+    --tinta: #ededef; --mudo: rgba(237, 237, 239, 0.55); --mais-mudo: rgba(237, 237, 239, 0.35);
+    --verde: #3ecf8e; --vermelho: #e5484d; --ambar: #d9a548;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--fundo); color: var(--tinta);
+    font-family: 'Schibsted Grotesk', system-ui, sans-serif;
+    font-size: 16px; line-height: 1.5;
+    max-width: 1080px; margin: 0 auto; padding: 48px 32px 96px;
+  }
+  .num { font-family: 'Fragment Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .sobe { color: var(--verde); } .desce { color: var(--vermelho); }
+  .ambar { color: var(--ambar); } .neutro { color: var(--tinta); }
+  .mudo { color: var(--mudo); font-size: 13px; }
+  .marcador { font-family: 'Fragment Mono', monospace; font-size: 12px; color: var(--mais-mudo); letter-spacing: 0.08em; }
+
+  .topo { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 64px; }
+  .topo h1 { font-weight: 800; font-size: 22px; letter-spacing: 0.02em; }
+  .topo .modo { font-family: 'Fragment Mono', monospace; font-size: 12px; color: var(--ambar); border: 1px solid var(--borda); padding: 4px 10px; }
+
+  .hero { margin-bottom: 48px; animation: subir 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .rotulo { font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--mudo); margin-bottom: 12px; }
+  .gigante { font-size: clamp(56px, 10vw, 104px); font-weight: 400; letter-spacing: -0.03em; line-height: 1; }
+  .sub { color: var(--mudo); margin-top: 12px; }
+
+  .dormir { border: 1px solid var(--borda); background: var(--superficie); padding: 20px 24px; margin-bottom: 48px;
+            display: flex; gap: 16px; align-items: baseline; animation: subir 0.6s 0.08s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .dormir strong { font-size: 24px; font-weight: 400; }
+  .dormir p { color: var(--mudo); } .dormir strong { margin-right: 4px; }
+
+  .grelha { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 48px; }
+  @media (max-width: 760px) { .grelha { grid-template-columns: 1fr; } body { padding: 32px 20px 64px; } }
+
+  .coluna { border: 1px solid var(--borda); background: var(--superficie); padding: 24px;
+            animation: subir 0.6s 0.16s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .coluna:last-child { animation-delay: 0.24s; }
+  .coluna h2 { font-size: 18px; font-weight: 700; margin-top: 6px; }
+  .legenda { font-size: 13px; color: var(--mudo); margin-bottom: 16px; }
+  .total { font-size: 34px; letter-spacing: -0.02em; margin-bottom: 20px; }
+
+  dl { border-top: 1px solid var(--borda); margin-bottom: 20px; }
+  dl div { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--borda); }
+  dt { color: var(--mudo); font-size: 14px; } dd { font-size: 14px; }
+  dl .cofre dt { color: var(--tinta); font-weight: 500; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-weight: 500; color: var(--mais-mudo); font-size: 12px; text-transform: uppercase;
+       letter-spacing: 0.08em; padding-bottom: 8px; }
+  th.num, td.num { text-align: right; }
+  td { padding: 8px 0 8px 12px; border-top: 1px solid var(--borda); }
+  td:first-child { padding-left: 0; }
+  td:last-child { text-align: right; }
+  .vazio { color: var(--mudo); font-size: 14px; padding: 12px 0; }
+
+  .pendentes { margin-bottom: 48px; }
+  .pendentes h2 { display: inline; font-size: 16px; font-weight: 700; margin-left: 8px; }
+  .pendentes ul { list-style: none; margin-top: 12px; }
+  .pendentes li { padding: 8px 0; border-top: 1px solid var(--borda); font-size: 14px; }
+
+  .exame h2 { display: inline; font-size: 16px; font-weight: 700; margin-left: 8px; }
+  .exame .sub { margin: 8px 0 12px; }
+  .barra { height: 3px; background: var(--borda); }
+  .barra div { height: 100%; background: var(--tinta); }
+
+  .rodape { margin-top: 64px; font-size: 12px; color: var(--mais-mudo); font-family: 'Fragment Mono', monospace; }
+
+  @keyframes subir { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .hero, .dormir, .coluna { animation: none; } }
+</style>
+</head>
+<body>
+  <header class="topo">
+    <h1>SONAR</h1>
+    <span class="modo">FANTASMA · 13:41</span>
+  </header>
+  
+    <section class="hero">
+      <p class="rotulo">O que terias agora — dinheiro a fingir, preços a sério</p>
+      <p class="gigante num sobe">106,73 €</p>
+      <p class="sub">começou com 100,00 € · +6,73 €</p>
+    </section>
+
+    <article class="coluna">
+    <header>
+      <span class="marcador">//01</span>
+      <h2>A tua carteira</h2>
+      <p class="legenda">compra uns minutos depois do alerta, como reagirias, e vende sozinha — é esta que conta para o exame</p>
+    </header>
+    <p class="total num sobe" hidden>106,73 €</p>
+    <dl>
+      <div><dt>Por gastar — gaveta calma</dt><dd class="num">0,00 €</dd></div>
+      <div><dt>Por gastar — gaveta arriscada</dt><dd class="num">7,02 €</dd></div>
+      <div class="cofre"><dt>Cofre — nunca volta a jogar</dt><dd class="num">4,71 €</dd></div>
+      <div><dt>Vendas de hoje</dt><dd class="num">1 (+6,73 €)</dd></div>
+    </dl>
+    <table>
+          <thead><tr><th>Moeda</th><th class="num">Pagou</th><th class="num">Vale agora</th><th class="num">±</th><th></th></tr></thead>
+          <tbody><tr>
+    <td>Bear stealing a bicycle <span class="mudo">B</span></td>
+    <td class="num">10,00 €</td>
+    <td class="num">9,24 €</td>
+    <td class="num desce">−8%</td>
+    <td></td>
+  </tr><tr>
+    <td>VIRAL AF ONLY 8K MC?! <span class="mudo">B</span></td>
+    <td class="num">10,00 €</td>
+    <td class="num">9,27 €</td>
+    <td class="num desce">−7%</td>
+    <td></td>
+  </tr><tr>
+    <td>khan coin <span class="mudo">B</span></td>
+    <td class="num">10,00 €</td>
+    <td class="num">9,27 €</td>
+    <td class="num desce">−7%</td>
+    <td></td>
+  </tr><tr>
+    <td>THE MYTHICAL MONSTER  <span class="mudo">B</span></td>
+    <td class="num">10,00 €</td>
+    <td class="num">9,27 €</td>
+    <td class="num desce">−7%</td>
+    <td></td>
+  </tr><tr>
+    <td>BEAU <span class="mudo">B</span></td>
+    <td class="num">10,00 €</td>
+    <td class="num">9,27 €</td>
+    <td class="num desce">−7%</td>
+    <td></td>
+  </tr><tr>
+    <td>ShadowFrog <span class="mudo">B</span></td>
+    <td class="num">10,00 €</td>
+    <td class="num">9,27 €</td>
+    <td class="num desce">−7%</td>
+    <td></td>
+  </tr><tr>
+    <td>xoge <span class="mudo">B</span></td>
+    <td class="num">10,00 €</td>
+    <td class="num">9,00 €</td>
+    <td class="num desce">−10%</td>
+    <td></td>
+  </tr><tr>
+    <td>Pup family <span class="mudo">B</span></td>
+    <td class="num">10,00 €</td>
+    <td class="num">9,27 €</td>
+    <td class="num desce">−7%</td>
+    <td></td>
+  </tr><tr>
+    <td>Raccoon On Paddleboard <span class="mudo">B</span></td>
+    <td class="num">5,00 €</td>
+    <td class="num">11,93 €</td>
+    <td class="num sobe">+139%</td>
+    <td><span class="mudo">já vendeu metade</span></td>
+  </tr><tr>
+    <td>the capybara pup <span class="mudo">B</span></td>
+    <td class="num">10,00 €</td>
+    <td class="num">9,23 €</td>
+    <td class="num desce">−8%</td>
+    <td></td>
+  </tr></tbody>
+        </table>
+  </article>
+
+
+    <section class="pendentes">
+            <span class="marcador">//02</span><h2>Compras a caminho</h2>
+            <ul><li>Let's Enjoy The Ride <span class="mudo">B · compra sozinho depois de 23/07, 13:45</span></li><li>Just a Popular Guy <span class="mudo">B · compra sozinho depois de 23/07, 13:45</span></li><li>pepo <span class="mudo">B · compra sozinho depois de 23/07, 13:45</span></li><li>The Golden Bull <span class="mudo">B · compra sozinho depois de 23/07, 13:45</span></li><li>Kaito The Yapybara <span class="mudo">B · compra sozinho depois de 23/07, 13:50</span></li><li>The Affirmation Hamster <span class="mudo">B · compra sozinho depois de 23/07, 13:50</span></li><li>GenZ <span class="mudo">B · compra sozinho depois de 23/07, 13:50</span></li><li>Yapybara The Capybara <span class="mudo">B · compra sozinho depois de 23/07, 13:50</span></li><li>Giga Raccoon <span class="mudo">B · compra sozinho depois de 23/07, 13:50</span></li><li>GEN Restaurant Group Inc <span class="mudo">B · compra sozinho depois de 23/07, 13:56</span></li><li>Trumpithy <span class="mudo">B · compra sozinho depois de 23/07, 13:56</span></li><li>The White Raccoon <span class="mudo">B · compra sozinho depois de 23/07, 13:56</span></li></ul>
+          </section>
+
+    <section class="exame">
+      <span class="marcador">//03</span>
+      <h2>O exame da semana</h2>
+      <p class="sub">dia 1 de 7 · neste momento <span class="sobe">a passar</span> — só o último dia conta</p>
+      <div class="barra"><div style="width:14.3%"></div></div>
+    </section>
+  <footer class="rodape">gerado pelo radar · actualiza sozinho a cada 5 minutos · fecha e abre quando quiseres</footer>
+</body>
+</html>
