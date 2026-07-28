@@ -78,6 +78,13 @@
   td:last-child { text-align: right; }
   .vazio { color: var(--mudo); font-size: 14px; padding: 12px 0; }
 
+  .historico { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--borda); }
+  .historico h2 { display: inline; font-size: 14px; font-weight: 700; margin-left: 8px; }
+  .historico ul { list-style: none; margin-top: 12px; }
+  .historico li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--borda); font-size: 14px; flex-wrap: wrap; }
+  .historico li:first-child { border-top: 0; }
+  .historico li .mudo { flex: 1; text-align: right; font-size: 12px; }
+
   .pendentes { margin-bottom: 48px; }
   .pendentes h2 { display: inline; font-size: 16px; font-weight: 700; margin-left: 8px; }
   .pendentes ul { list-style: none; margin-top: 12px; }
@@ -113,7 +120,7 @@
 <body>
   <header class="topo">
     <h1>SONAR</h1>
-    <span class="modo">FANTASMA · 15:28</span>
+    <span class="modo">FANTASMA · 15:34</span>
   </header>
   
     <section class="hero">
@@ -136,6 +143,30 @@
       <div><dt>Vendas de hoje</dt><dd class="num">1 · <span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>0,85 €</span></dd></div>
     </dl>
     <p class="vazio">Sem posições abertas — o radar está à caça.</p>
+    <section class="historico">
+    <span class="marcador">//04</span><h2>Últimas vendas</h2>
+    <ul><li>
+    <span>Bear On Pole</span>
+    <span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−14%</span>
+    <span class="mudo">ficou parada — larguei o lugar · 28/07, 00:00</span>
+  </li><li>
+    <span>fomo man</span>
+    <span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−5%</span>
+    <span class="mudo">ficou parada — larguei o lugar · 27/07, 21:18</span>
+  </li><li>
+    <span>world</span>
+    <span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−6%</span>
+    <span class="mudo">ficou parada — larguei o lugar · 27/07, 17:55</span>
+  </li><li>
+    <span>TROLL</span>
+    <span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−10%</span>
+    <span class="mudo">ficou parada — larguei o lugar · 27/07, 17:47</span>
+  </li><li>
+    <span>Bonk</span>
+    <span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−10%</span>
+    <span class="mudo">ficou parada — larguei o lugar · 27/07, 16:47</span>
+  </li></ul>
+  </section>
   </article>
 
 
