@@ -120,7 +120,7 @@
 <body>
   <header class="topo">
     <h1>SONAR</h1>
-    <span class="modo">FANTASMA · 16:51</span>
+    <span class="modo">FANTASMA · 16:57</span>
   </header>
   
     <section class="hero">
@@ -186,6 +186,7 @@
       <p class="comprar-nota">Nota do radar: <strong id="c-nota">—</strong>/100</p>
       <p class="comprar-nota">Vou comprar: <strong id="c-eur">—</strong></p>
       <p class="mudo">Quantos bons sinais estao alinhados agora — 60+ vale a pena, 85+ e forte. A decisao e tua.</p>
+      <p id="c-preco" class="comprar-nota" hidden>Desde o alerta: <span id="c-preco-badge"></span></p>
       <p id="c-estado" class="comprar-estado"></p>
       <div class="comprar-botoes">
         <button id="c-confirmar" class="btn-comprar">Confirmar compra</button>
@@ -200,13 +201,17 @@
     // no teto da gaveta — assim o ecra diz o valor REAL que vai ser comprado.
     var ESCADA = [{"nota":85,"eur":22},{"nota":75,"eur":15},{"nota":65,"eur":10},{"nota":0,"eur":6}];
     var TETOS = {"A":0,"B":25};
+    var SUBIDA_MAX = 40;
+    var QUEDA_MAX = 35;
     var p = new URLSearchParams(location.search);
     var mint = p.get('comprar');
     if (!mint) return;
     var nome = p.get('nome') || mint.slice(0, 6);
     var gaveta = p.get('gaveta') === 'A' ? 'A' : 'B';
     var nota = parseInt(p.get('nota') || '60', 10);
+    var precoAlerta = parseFloat(p.get('preco') || '0');
     var fundo = document.getElementById('comprar-fundo');
+    var btnConfirmar = document.getElementById('c-confirmar');
     document.getElementById('c-nome').textContent = nome;
     document.getElementById('c-nota').textContent = isNaN(nota) ? '—' : nota;
     var degrau = ESCADA.slice()
@@ -217,6 +222,44 @@
     fundo.hidden = false;
     function fechar() { fundo.hidden = true; history.replaceState(null, '', location.pathname); }
     document.getElementById('c-passar').onclick = fechar;
+
+    // O alerta agora fica valido 8h — sem isto, confirmar as cegas horas
+    // depois podia comprar um pico ou um afundanco. Mesmos limiares que a
+    // compra atrasada usa por baixo dos panos, so que aqui, ANTES de gastar.
+    if (precoAlerta > 0) {
+      fetch('https://api.dexscreener.com/latest/dex/tokens/' + mint)
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          var pares = (d && d.pairs) || [];
+          if (!pares.length) return;
+          var melhor = pares.reduce(function (a, b) {
+            var la = (a.liquidity && a.liquidity.usd) || 0;
+            var lb = (b.liquidity && b.liquidity.usd) || 0;
+            return lb > la ? b : a;
+          });
+          var precoAgora = parseFloat(melhor.priceUsd || '0');
+          if (!(precoAgora > 0)) return;
+          var pct = ((precoAgora - precoAlerta) / precoAlerta) * 100;
+          var sinal = pct >= 0 ? '+' : '−';
+          var classe = pct > 0.5 ? 'sobe' : pct < -0.5 ? 'desce' : 'neutro';
+          var linha = document.getElementById('c-preco');
+          var badge = document.getElementById('c-preco-badge');
+          badge.className = 'badge ' + classe;
+          badge.textContent = sinal + Math.abs(pct).toFixed(0) + '%';
+          linha.hidden = false;
+          if (pct > SUBIDA_MAX) {
+            btnConfirmar.disabled = true;
+            document.getElementById('c-estado').textContent =
+              'Ja subiu ' + pct.toFixed(0) + '% desde o alerta — o timing passou, ja nao e boa entrada.';
+          } else if (pct < -QUEDA_MAX) {
+            btnConfirmar.disabled = true;
+            document.getElementById('c-estado').textContent =
+              'Ja caiu ' + Math.abs(pct).toFixed(0) + '% desde o alerta — nao vale a pena entrar agora.';
+          }
+        })
+        .catch(function () { /* sem preco ao vivo, decide-se pelo alerta como sempre */ });
+    }
+
     document.getElementById('c-confirmar').onclick = function () {
       var btn = this, estado = document.getElementById('c-estado');
       btn.disabled = true;
