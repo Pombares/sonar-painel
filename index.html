@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="300">
+<meta http-equiv="refresh" content="60">
 <title>SONAR — carteira fantasma</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -124,13 +124,13 @@
 <body>
   <header class="topo">
     <h1>SONAR</h1>
-    <span class="modo">FANTASMA · 15:03</span>
+    <span class="modo">FANTASMA · 15:06</span>
   </header>
   
     <section class="hero">
       <p class="rotulo">O que terias agora — dinheiro a fingir, preços a sério</p>
-      <p class="gigante num neutro">98,41 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−1.6%</span></p>
-      <p class="sub">começou com 100,00 € · −1,59 €</p>
+      <p class="gigante num neutro">96,59 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−3.4%</span></p>
+      <p class="sub">começou com 100,00 € · −3,41 €</p>
     </section>
 
     <article class="coluna">
@@ -139,7 +139,7 @@
       <h2>A tua carteira</h2>
       <p class="legenda">só compra quando TU tocas em Comprar; vende sozinha — é esta que conta para o exame</p>
     </header>
-    <p class="total num desce" hidden>98,41 €</p>
+    <p class="total num desce" hidden>96,59 €</p>
     <dl>
       <div><dt>Por gastar</dt><dd class="num">88,00 €</dd></div>
       <div><dt>Comprado — 2 moedas</dt><dd class="num">12,00 €</dd></div>
@@ -149,17 +149,17 @@
     <p class="rotulo">Moedas que tens agora — ainda não vendidas</p>
     <table>
           <thead><tr><th>Moeda</th><th class="num">Pagou</th><th class="num">Vale agora</th><th class="num">±</th><th></th></tr></thead>
-          <tbody><tr class="linha desce">
+          <tbody id="pos-corpo"><tr class="linha desce">
     <td>TikTok <span class="mudo">B</span></td>
     <td class="num">6,00 €</td>
-    <td class="num">4,72 €</td>
-    <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−21%</span></td>
+    <td class="num">3,38 €</td>
+    <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−44%</span></td>
     <td></td>
   </tr><tr class="linha desce">
     <td>Catjak <span class="mudo">B</span></td>
     <td class="num">6,00 €</td>
-    <td class="num">5,68 €</td>
-    <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−5%</span></td>
+    <td class="num">5,21 €</td>
+    <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−13%</span></td>
     <td></td>
   </tr></tbody>
         </table>
@@ -285,6 +285,54 @@
         .catch(function () { /* sem preco ao vivo, decide-se pelo alerta como sempre */ });
     }
 
+    /**
+     * Acrescenta a moeda comprada a tabela "Moedas que tens agora", marcada
+     * como "a confirmar". A proxima passagem do painel substitui-a pela linha
+     * verdadeira, ja com o valor cotado.
+     *
+     * Constroi por DOM (createElement + textContent), NUNCA innerHTML com o
+     * nome do token la dentro: o nome vem da internet e ja tentou trazer HTML.
+     */
+    function mostrarLinhaOptimista(nomeMoeda, eurGasto, gav) {
+      var corpo = document.getElementById('pos-corpo');
+      if (!corpo) {
+        // Carteira estava vazia: nao ha tabela nenhuma, so o texto do vazio.
+        var vazio = document.getElementById('pos-vazio');
+        if (!vazio || !vazio.parentNode) return;
+        var tabela = document.createElement('table');
+        tabela.innerHTML =
+          '<thead><tr><th>Moeda</th><th class="num">Pagou</th>' +
+          '<th class="num">Vale agora</th><th class="num">±</th><th></th></tr></thead>' +
+          '<tbody id="pos-corpo"></tbody>';
+        vazio.parentNode.replaceChild(tabela, vazio);
+        corpo = tabela.querySelector('#pos-corpo');
+      }
+      if (!corpo) return;
+      var euros = eurGasto.toFixed(2).replace('.', ',') + ' €';
+      var tr = document.createElement('tr');
+      tr.className = 'linha neutro';
+      var celulas = [
+        { texto: nomeMoeda, sufixoMudo: gav },
+        { texto: euros, classe: 'num' },
+        { texto: euros, classe: 'num' },
+        { texto: '—', classe: 'num' },
+        { texto: 'a confirmar…', classe: 'mudo' },
+      ];
+      celulas.forEach(function (c) {
+        var td = document.createElement('td');
+        if (c.classe) td.className = c.classe;
+        td.textContent = c.texto;
+        if (c.sufixoMudo) {
+          var span = document.createElement('span');
+          span.className = 'mudo';
+          span.textContent = ' ' + c.sufixoMudo;
+          td.appendChild(span);
+        }
+        tr.appendChild(td);
+      });
+      corpo.appendChild(tr);
+    }
+
     document.getElementById('c-confirmar').onclick = function () {
       var btn = this, estado = document.getElementById('c-estado');
       btn.disabled = true;
@@ -293,8 +341,16 @@
         method: 'POST',
         body: JSON.stringify({ mint: mint, nome: nome, gaveta: gaveta, nota: nota, alertaEmMs: alertaEmMs }),
       }).then(function () {
-        estado.textContent = 'Pedido enviado. A voltar ao dashboard...';
+        estado.textContent = 'Comprado. Ja aparece na tua carteira.';
         btn.textContent = 'Enviado';
+        // Mostra a moeda JA, sem esperar pela republicacao do painel.
+        //
+        // Porque isto existe (queixa dele, 04/08: *"compro e nao actualiza
+        // logo, e meio estranho"*): mesmo com o ouvinte a republicar o painel
+        // logo apos a compra, ainda ha o deploy do GitHub Pages e o refresh
+        // desta pagina pelo meio. A linha optimista tapa esse buraco — e vem
+        // marcada como "a confirmar", nunca a fingir que ja esta cotada.
+        mostrarLinhaOptimista(nome, eur, gaveta);
         setTimeout(fechar, 1500);
       }).catch(function () {
         estado.textContent = 'Nao deu para enviar. Tenta outra vez.';
