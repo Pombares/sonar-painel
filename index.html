@@ -49,6 +49,20 @@
   .topo h1 { font-weight: 800; font-size: 22px; letter-spacing: 0.02em; }
   .topo .modo { font-family: 'Fragment Mono', monospace; font-size: 12px; color: var(--ambar); border: 1px solid var(--borda); padding: 4px 10px; }
 
+  /* O botao dos avisos. Ocupa a largura toda de proposito: e a primeira coisa
+     a fazer numa instalacao nova, e nao pode passar despercebido. Desaparece
+     assim que o aparelho esta inscrito — deixa de ter razao de existir. */
+  .avisos-btn { display: block; width: 100%; margin: 0 0 32px; padding: 14px 16px;
+                background: var(--verde); color: #08130d; border: 0;
+                font-family: inherit; font-size: 15px; font-weight: 700;
+                cursor: pointer; text-align: center; }
+  .avisos-btn[hidden] { display: none; }
+  .avisos-btn:disabled { cursor: default; }
+  .avisos-btn.bom { background: rgba(62, 207, 142, 0.16); color: var(--verde); }
+  .avisos-btn.aviso { background: var(--superficie); color: var(--mudo);
+                      border: 1px solid var(--borda); font-weight: 400; font-size: 14px; }
+  .avisos-btn.mau { background: rgba(229, 72, 77, 0.16); color: var(--vermelho); }
+
   .hero { margin-bottom: 48px; animation: subir 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
   .rotulo { font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--mudo); margin-bottom: 12px; }
   .gigante { font-size: clamp(56px, 10vw, 104px); font-weight: 400; letter-spacing: -0.03em; line-height: 1; }
@@ -132,13 +146,19 @@
 <body>
   <header class="topo">
     <h1>SONAR</h1>
-    <span class="modo">FANTASMA · 16:33</span>
+    <span class="modo">FANTASMA · 16:39</span>
   </header>
+  <!-- O botao das notificacoes tem de ser VISIVEL e dizer em que estado esta.
+       Na primeira versao a inscricao acontecia num toque em qualquer sitio do
+       ecra, sem botao nenhum e sem retorno: ele abriu a app, nao lhe apareceu
+       nada, e nao havia forma de perceber porque — "eu abri e nao me pediu
+       nada". Um mecanismo que nao se ve e que nao se explica nao serve. -->
+  <button id="avisos-btn" class="avisos-btn" hidden></button>
   
     <section class="hero">
       <p class="rotulo">O que terias agora — dinheiro a fingir, preços a sério</p>
-      <p class="gigante num neutro">94,40 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−5.6%</span></p>
-      <p class="sub">começou com 100,00 € · −5,60 €</p>
+      <p class="gigante num neutro">94,54 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−5.5%</span></p>
+      <p class="sub">começou com 100,00 € · −5,46 €</p>
     </section>
 
     <article class="coluna">
@@ -147,7 +167,7 @@
       <h2>A tua carteira</h2>
       <p class="legenda">só compra quando TU tocas em Comprar; vende sozinha — é esta que conta para o exame</p>
     </header>
-    <p class="total num desce" hidden>94,40 €</p>
+    <p class="total num desce" hidden>94,54 €</p>
     <dl>
       <div><dt>Por gastar</dt><dd class="num">78,52 €</dd></div>
       <div><dt>Comprado — 3 moedas</dt><dd class="num">18,00 €</dd></div>
@@ -160,19 +180,19 @@
           <tbody id="pos-corpo"><tr class="linha desce">
     <td>Catjak <span class="mudo">B</span></td>
     <td class="num">6,00 €</td>
-    <td class="num">5,00 €</td>
+    <td class="num">4,96 €</td>
     <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−17%</span></td>
     <td></td>
   </tr><tr class="linha desce">
     <td>Hoppy  <span class="mudo">B</span></td>
     <td class="num">6,00 €</td>
-    <td class="num">5,33 €</td>
-    <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−11%</span></td>
+    <td class="num">5,47 €</td>
+    <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−9%</span></td>
     <td></td>
   </tr><tr class="linha desce">
     <td>three.ws <span class="mudo">B</span></td>
     <td class="num">6,00 €</td>
-    <td class="num">5,55 €</td>
+    <td class="num">5,58 €</td>
     <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−7%</span></td>
     <td></td>
   </tr></tbody>
@@ -235,9 +255,17 @@
       return out;
     }
 
+    /**
+     * Inscreve este aparelho. Devolve SEMPRE uma palavra que diz o que
+     * aconteceu ('granted' / 'denied' / o motivo da falha), para o botao poder
+     * mostrar o estado. A versao anterior engolia tudo em silencio, e por isso
+     * ele abriu a app e nao percebeu porque nao lhe aparecia nada.
+     */
     function inscreverPush() {
-      if (!('PushManager' in window) || !('Notification' in window)) return;
-      if (Notification.permission === 'denied') return;   // recusou: fim, sem insistir
+      if (!('PushManager' in window) || !('Notification' in window)) {
+        return Promise.resolve('sem suporte');
+      }
+      if (Notification.permission === 'denied') return Promise.resolve('denied');
       // A ORDEM IMPORTA, e ja custou dois testes falhados no telemovel no
       // projecto Carla: o pedido de autorizacao tem de ser a PRIMEIRA coisa
       // dentro do toque. Se se esperar primeiro pelo service worker, o iPhone da
@@ -245,14 +273,14 @@
       var pedido = (Notification.permission === 'granted')
         ? Promise.resolve('granted')
         : Notification.requestPermission();
-      pedido.then(function (perm) {
-        if (perm !== 'granted') return;
+      return pedido.then(function (perm) {
+        if (perm !== 'granted') return perm;
         return navigator.serviceWorker.ready.then(function (reg) {
           return reg.pushManager.getSubscription().then(function (sub) {
             if (sub) return sub;
             return fetch('push/chave').then(function (r) { return r.json(); })
               .then(function (d) {
-                if (!d || !d.chave) return null;
+                if (!d || !d.chave) throw new Error('sem chave do servidor');
                 return reg.pushManager.subscribe({
                   userVisibleOnly: true,
                   applicationServerKey: b64ParaBytes(d.chave),
@@ -260,22 +288,88 @@
               });
           });
         }).then(function (sub) {
-          if (!sub) return;
           // Entrega-se SEMPRE a morada, mesmo repetida: se o ficheiro das
           // inscricoes se perder no Mac, a proxima abertura repara-o sozinha.
           return fetch('push/subscrever', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(sub.toJSON()),
-          });
+          }).then(function () { return 'granted'; });
         });
-      }).catch(function () {});
+      }).catch(function (e) {
+        return (e && e.message) ? e.message : 'erro';
+      });
     }
 
-    // 'click' e nao 'pointerdown': o WebKit do iPhone so da o gesto por valido
-    // no toque COMPLETO — com pointerdown o pedido era ignorado em silencio.
-    addEventListener('click', inscreverPush, { once: true });
-    // Se ja autorizou noutra visita, nao e preciso gesto nenhum.
+    // O BOTAO, com estado a vista. Substitui o antigo 'toca em qualquer sitio',
+    // que era invisivel e nao dizia nada quando falhava.
+    var botao = document.getElementById('avisos-btn');
+
+    function mostrarEstado() {
+      if (!botao) return;
+      // Fora do ecra principal o iOS NAO da push, por muito que se peca. Mais
+      // vale dize-lo do que deixa-lo a tocar num botao que nunca vai funcionar.
+      var noEcraPrincipal = window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true;
+      var temApi = ('Notification' in window) && ('PushManager' in window);
+
+      if (!temApi || !noEcraPrincipal) {
+        botao.hidden = false;
+        botao.className = 'avisos-btn aviso';
+        botao.textContent = 'Para receber avisos, abre esta app pelo ícone do ecrã principal';
+        botao.disabled = true;
+        return;
+      }
+      if (Notification.permission === 'denied') {
+        botao.hidden = false;
+        botao.className = 'avisos-btn mau';
+        botao.textContent = 'Avisos bloqueados — Ajustes > Sonar > Notificações';
+        botao.disabled = true;
+        return;
+      }
+      if (Notification.permission === 'granted') {
+        navigator.serviceWorker.ready
+          .then(function (reg) { return reg.pushManager.getSubscription(); })
+          .then(function (sub) {
+            botao.hidden = !!sub;          // ja inscrito: sai da frente
+            if (!sub) {
+              botao.className = 'avisos-btn';
+              botao.textContent = 'Ligar os avisos neste telemóvel';
+              botao.disabled = false;
+            }
+          })
+          .catch(function () {});
+        return;
+      }
+      botao.hidden = false;
+      botao.className = 'avisos-btn';
+      botao.textContent = 'Ligar os avisos neste telemóvel';
+      botao.disabled = false;
+    }
+
+    if (botao) {
+      botao.onclick = function () {
+        botao.textContent = 'A ligar…';
+        botao.disabled = true;
+        inscreverPush().then(function (r) {
+          if (r === 'granted') {
+            botao.className = 'avisos-btn bom';
+            botao.textContent = 'Avisos ligados neste telemóvel ✓';
+            setTimeout(function () { botao.hidden = true; }, 4000);
+          } else if (r === 'denied') {
+            botao.className = 'avisos-btn mau';
+            botao.textContent = 'Recusaste — Ajustes > Sonar > Notificações';
+          } else {
+            botao.className = 'avisos-btn mau';
+            botao.textContent = 'Não deu (' + r + ') — toca para tentar outra vez';
+            botao.disabled = false;
+          }
+        });
+      };
+      mostrarEstado();
+    }
+    // Se ja autorizou noutra visita, reinscreve-se em silencio — o botao ja
+    // trata de se esconder quando ha inscricao.
     if (('Notification' in window) && Notification.permission === 'granted') inscreverPush();
   })();
 
