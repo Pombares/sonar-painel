@@ -84,6 +84,10 @@
   .historico li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--borda); font-size: 14px; flex-wrap: wrap; }
   .historico li:first-child { border-top: 0; }
   .historico li .mudo { flex: 1; text-align: right; font-size: 12px; }
+  .hist-toggle { display: flex; gap: 8px; margin-top: 14px; }
+  .hist-btn { background: transparent; color: var(--mudo); border: 1px solid var(--borda);
+              padding: 6px 12px; font-size: 12px; font-family: inherit; cursor: pointer; }
+  .hist-btn.is-active { color: var(--tinta); border-color: var(--tinta); }
 
   .pendentes { margin-bottom: 48px; }
   .pendentes h2 { display: inline; font-size: 16px; font-weight: 700; margin-left: 8px; }
@@ -120,13 +124,13 @@
 <body>
   <header class="topo">
     <h1>SONAR</h1>
-    <span class="modo">FANTASMA · 13:58</span>
+    <span class="modo">FANTASMA · 14:04</span>
   </header>
   
     <section class="hero">
       <p class="rotulo">O que terias agora — dinheiro a fingir, preços a sério</p>
-      <p class="gigante num neutro">95,12 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−4.9%</span></p>
-      <p class="sub">começou com 100,00 € · −4,88 €</p>
+      <p class="gigante num neutro">95,13 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−4.9%</span></p>
+      <p class="sub">começou com 100,00 € · −4,87 €</p>
     </section>
 
     <article class="coluna">
@@ -135,7 +139,7 @@
       <h2>A tua carteira</h2>
       <p class="legenda">só compra quando TU tocas em Comprar; vende sozinha — é esta que conta para o exame</p>
     </header>
-    <p class="total num desce" hidden>95,12 €</p>
+    <p class="total num desce" hidden>95,13 €</p>
     <dl>
       <div><dt>Por gastar</dt><dd class="num">66,66 €</dd></div>
       <div><dt>Comprado — 2 moedas</dt><dd class="num">12,00 €</dd></div>
@@ -148,20 +152,24 @@
           <tbody><tr class="linha desce">
     <td>The Peptide Dog <span class="mudo">B</span></td>
     <td class="num">6,00 €</td>
-    <td class="num">5,43 €</td>
+    <td class="num">5,45 €</td>
     <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−9%</span></td>
     <td></td>
   </tr><tr class="linha desce">
     <td>ALLINDOGE <span class="mudo">B</span></td>
     <td class="num">6,00 €</td>
-    <td class="num">5,37 €</td>
+    <td class="num">5,36 €</td>
     <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−11%</span></td>
     <td></td>
   </tr></tbody>
         </table>
     <section class="historico">
     <span class="marcador">//04</span><h2>Últimas vendas</h2>
-    <ul><li>
+    <div class="hist-toggle">
+      <button type="button" class="hist-btn is-active" data-ordem="recentes">Recentes</button>
+      <button type="button" class="hist-btn" data-ordem="melhores">Melhores</button>
+    </div>
+    <ul id="hist-lista"><li>
     <span>CATE</span>
     <span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−7%</span>
     <span class="mudo">ficou parada — larguei o lugar · 04/08, 11:12</span>
@@ -229,6 +237,9 @@
     // e mostra sempre "Confirmar compra" activo, mesmo tocando outra vez no
     // mesmo alerta antigo (a notificacao no telemovel fica la, nao desaparece).
     var JA_TEM = ["GB68eELgf864nrQHjNvrXHF6Xywpp1kYsb7fsGBupump","HyDKNdnhZNVYQMruBevbNsUWruA9STmAQrS4srXApump"];
+    // Historico completo para o toggle Recentes/Melhores — sem isto o
+    // "Melhores" so via os ultimos 8 fechos, que raramente sao os melhores.
+    var HISTORICO = [{"nome":"Bonk","lucroEur":-0.59,"pct":-10,"motivo":"ficou parada — larguei o lugar","quandoMs":1785167259476,"quando":"27/07, 16:47"},{"nome":"TROLL","lucroEur":-0.6,"pct":-10,"motivo":"ficou parada — larguei o lugar","quandoMs":1785170857546,"quando":"27/07, 17:47"},{"nome":"world","lucroEur":-0.34,"pct":-6,"motivo":"ficou parada — larguei o lugar","quandoMs":1785171344125,"quando":"27/07, 17:55"},{"nome":"fomo man","lucroEur":-0.32,"pct":-5,"motivo":"ficou parada — larguei o lugar","quandoMs":1785183520924,"quando":"27/07, 21:18"},{"nome":"Bear On Pole","lucroEur":-0.85,"pct":-14,"motivo":"ficou parada — larguei o lugar","quandoMs":1785193211481,"quando":"28/07, 00:00"},{"nome":"CUBEMAN","lucroEur":-1.73,"pct":-17,"motivo":"ficou parada — larguei o lugar","quandoMs":1785299613552,"quando":"29/07, 05:33"},{"nome":"world","lucroEur":-1.11,"pct":-19,"motivo":"ficou parada — larguei o lugar","quandoMs":1785303470123,"quando":"29/07, 06:37"},{"nome":"KITTY","lucroEur":-1.26,"pct":-21,"motivo":"ficou parada — larguei o lugar","quandoMs":1785311900869,"quando":"29/07, 08:58"},{"nome":"POPCAT","lucroEur":-0.68,"pct":-11,"motivo":"ficou parada — larguei o lugar","quandoMs":1785311973570,"quando":"29/07, 08:59"},{"nome":"UFD","lucroEur":-0.73,"pct":-12,"motivo":"ficou parada — larguei o lugar","quandoMs":1785321500044,"quando":"29/07, 11:38"},{"nome":"Fauci","lucroEur":-3.63,"pct":-60,"motivo":"stop — travão de segurança","quandoMs":1785366894757,"quando":"30/07, 00:14"},{"nome":"USELESS","lucroEur":-0.77,"pct":-13,"motivo":"ficou parada — larguei o lugar","quandoMs":1785394721643,"quando":"30/07, 07:58"},{"nome":"normoids","lucroEur":-1.87,"pct":-31,"motivo":"ficou parada — larguei o lugar","quandoMs":1785398453537,"quando":"30/07, 09:00"},{"nome":"world","lucroEur":-0.56,"pct":-9,"motivo":"ficou parada — larguei o lugar","quandoMs":1785406824163,"quando":"30/07, 11:20"},{"nome":"KITTY","lucroEur":-0.92,"pct":-15,"motivo":"ficou parada — larguei o lugar","quandoMs":1785441415402,"quando":"30/07, 20:56"},{"nome":"Get these BEGGARS out of here","lucroEur":-2.03,"pct":-34,"motivo":"ficou parada — larguei o lugar","quandoMs":1785487776411,"quando":"31/07, 09:49"},{"nome":"Punycode","lucroEur":-1.56,"pct":-16,"motivo":"ficou parada — larguei o lugar","quandoMs":1785492634073,"quando":"31/07, 11:10"},{"nome":"RAKO","lucroEur":3.2,"pct":107,"motivo":"vendeu metade — dobrou","quandoMs":1785494617647,"quando":"31/07, 11:43"},{"nome":"RAKO","lucroEur":1.18,"pct":39,"motivo":"travão móvel — caiu do pico","quandoMs":1785497046739,"quando":"31/07, 12:24"},{"nome":"world","lucroEur":-0.62,"pct":-10,"motivo":"ficou parada — larguei o lugar","quandoMs":1785522747361,"quando":"31/07, 19:32"},{"nome":"TROLL","lucroEur":-0.78,"pct":-8,"motivo":"ficou parada — larguei o lugar","quandoMs":1785570953698,"quando":"01/08, 08:55"},{"nome":"UPTOBER","lucroEur":-1.18,"pct":-20,"motivo":"ficou parada — larguei o lugar","quandoMs":1785575823019,"quando":"01/08, 10:17"},{"nome":"UFD","lucroEur":-0.59,"pct":-10,"motivo":"ficou parada — larguei o lugar","quandoMs":1785580696140,"quando":"01/08, 11:38"},{"nome":"Catecoin","lucroEur":2.9,"pct":97,"motivo":"vendeu metade — dobrou","quandoMs":1785608445257,"quando":"01/08, 19:20"},{"nome":"KITTY","lucroEur":-0.42,"pct":-7,"motivo":"ficou parada — larguei o lugar","quandoMs":1785646513318,"quando":"02/08, 05:55"},{"nome":"USELESS","lucroEur":-0.3,"pct":-3,"motivo":"ficou parada — larguei o lugar","quandoMs":1785676117314,"quando":"02/08, 14:08"},{"nome":"world","lucroEur":-0.78,"pct":-8,"motivo":"ficou parada — larguei o lugar","quandoMs":1785696774973,"quando":"02/08, 19:52"},{"nome":"Catecoin","lucroEur":4.4,"pct":293,"motivo":"vendeu mais um quarto — quadruplicou","quandoMs":1785699632682,"quando":"02/08, 20:40"},{"nome":"USELESS","lucroEur":-0.79,"pct":-13,"motivo":"ficou parada — larguei o lugar","quandoMs":1785751396767,"quando":"03/08, 11:03"},{"nome":"Nongwan","lucroEur":4.41,"pct":147,"motivo":"vendeu metade — dobrou","quandoMs":1785764499083,"quando":"03/08, 14:41"},{"nome":"Nongwan","lucroEur":3.04,"pct":101,"motivo":"travão móvel — caiu do pico","quandoMs":1785766927797,"quando":"03/08, 15:22"},{"nome":"Catecoin","lucroEur":6.09,"pct":406,"motivo":"travão móvel — caiu do pico","quandoMs":1785783225542,"quando":"03/08, 19:53"},{"nome":"TROLL","lucroEur":-0.68,"pct":-11,"motivo":"ficou parada — larguei o lugar","quandoMs":1785784752623,"quando":"03/08, 20:19"},{"nome":"KET","lucroEur":-0.59,"pct":-10,"motivo":"ficou parada — larguei o lugar","quandoMs":1785785059697,"quando":"03/08, 20:24"},{"nome":"ALLINDOGE","lucroEur":-0.6,"pct":-6,"motivo":"ficou parada — larguei o lugar","quandoMs":1785785059697,"quando":"03/08, 20:24"},{"nome":"Looks at you","lucroEur":-1.6,"pct":-27,"motivo":"ficou parada — larguei o lugar","quandoMs":1785822170134,"quando":"04/08, 06:42"},{"nome":"CATE","lucroEur":-0.42,"pct":-7,"motivo":"ficou parada — larguei o lugar","quandoMs":1785838375447,"quando":"04/08, 11:12"}];
     // A aposta cresce com a nota (a escada da conviccao vem do config), travada
     // no teto da gaveta — assim o ecra diz o valor REAL que vai ser comprado.
     var ESCADA = [{"nota":85,"eur":22},{"nota":75,"eur":15},{"nota":65,"eur":10},{"nota":0,"eur":6}];
@@ -316,6 +327,50 @@
         btn.disabled = false;
       });
     };
+  })();
+
+  // Toggle Recentes/Melhores do historico. Constroi por DOM (nao innerHTML
+  // com o nome dentro) para o nome do token nunca poder injectar HTML.
+  (function () {
+    var lista = document.getElementById('hist-lista');
+    if (!lista || typeof HISTORICO === 'undefined' || !HISTORICO.length) return;
+    function seta(d) {
+      if (d > 0) return '<svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 1.5 10 9H2z"/></svg>';
+      if (d < 0) return '<svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>';
+      return '<svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><rect x="2" y="5" width="8" height="2"/></svg>';
+    }
+    function renderHistorico(ordem) {
+      var itens = HISTORICO.slice();
+      itens.sort(ordem === 'melhores'
+        ? function (a, b) { return b.lucroEur - a.lucroEur; }
+        : function (a, b) { return b.quandoMs - a.quandoMs; });
+      itens = itens.slice(0, 8);
+      lista.innerHTML = '';
+      itens.forEach(function (f) {
+        var classe = f.lucroEur > 0 ? 'sobe' : f.lucroEur < 0 ? 'desce' : 'neutro';
+        var sinal = f.lucroEur >= 0 ? '+' : '−';
+        var li = document.createElement('li');
+        var nomeSpan = document.createElement('span');
+        nomeSpan.textContent = f.nome;
+        var badgeSpan = document.createElement('span');
+        badgeSpan.className = 'badge ' + classe;
+        badgeSpan.innerHTML = seta(f.lucroEur) + sinal + Math.abs(f.pct) + '%';
+        var infoSpan = document.createElement('span');
+        infoSpan.className = 'mudo';
+        infoSpan.textContent = f.motivo + ' · ' + f.quando;
+        li.appendChild(nomeSpan);
+        li.appendChild(badgeSpan);
+        li.appendChild(infoSpan);
+        lista.appendChild(li);
+      });
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('.hist-btn'), function (btn) {
+      btn.onclick = function () {
+        Array.prototype.forEach.call(document.querySelectorAll('.hist-btn'), function (b) { b.classList.remove('is-active'); });
+        btn.classList.add('is-active');
+        renderHistorico(btn.getAttribute('data-ordem'));
+      };
+    });
   })();
   </script>
 </body>
