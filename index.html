@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="refresh" content="60">
 <title>SONAR — carteira fantasma</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sonar">
+<meta name="theme-color" content="#0c0c0d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;800&family=Fragment+Mono&display=swap" rel="stylesheet">
@@ -113,6 +118,9 @@
   .comprar-nota { font-size: 15px; margin-bottom: 8px; }
   .comprar-nota strong { font-family: 'Fragment Mono', monospace; color: var(--verde); }
   .comprar-estado { min-height: 20px; margin: 16px 0 20px; font-size: 14px; color: var(--mudo); }
+  /* Os tres estados do sinal: a cor confirma, o TEXTO e que diz — nunca so cor. */
+  .comprar-estado.antigo { color: var(--ambar); }
+  .comprar-estado.expirado { color: var(--vermelho); }
   .comprar-botoes { display: flex; gap: 12px; }
   .btn-comprar { flex: 1; background: var(--verde); color: #08130d; border: 0; padding: 14px; font-size: 15px;
                  font-weight: 700; font-family: inherit; cursor: pointer; }
@@ -124,13 +132,13 @@
 <body>
   <header class="topo">
     <h1>SONAR</h1>
-    <span class="modo">FANTASMA · 15:50</span>
+    <span class="modo">FANTASMA · 15:56</span>
   </header>
   
     <section class="hero">
       <p class="rotulo">O que terias agora — dinheiro a fingir, preços a sério</p>
-      <p class="gigante num neutro">95,64 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−4.4%</span></p>
-      <p class="sub">começou com 100,00 € · −4,36 €</p>
+      <p class="gigante num neutro">95,72 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−4.3%</span></p>
+      <p class="sub">começou com 100,00 € · −4,28 €</p>
     </section>
 
     <article class="coluna">
@@ -139,7 +147,7 @@
       <h2>A tua carteira</h2>
       <p class="legenda">só compra quando TU tocas em Comprar; vende sozinha — é esta que conta para o exame</p>
     </header>
-    <p class="total num desce" hidden>95,64 €</p>
+    <p class="total num desce" hidden>95,72 €</p>
     <dl>
       <div><dt>Por gastar</dt><dd class="num">84,52 €</dd></div>
       <div><dt>Comprado — 2 moedas</dt><dd class="num">12,00 €</dd></div>
@@ -152,13 +160,13 @@
           <tbody id="pos-corpo"><tr class="linha desce">
     <td>Catjak <span class="mudo">B</span></td>
     <td class="num">6,00 €</td>
-    <td class="num">5,01 €</td>
-    <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−17%</span></td>
+    <td class="num">5,08 €</td>
+    <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−15%</span></td>
     <td></td>
   </tr><tr class="linha sobe">
     <td>Hoppy  <span class="mudo">B</span></td>
     <td class="num">6,00 €</td>
-    <td class="num">6,11 €</td>
+    <td class="num">6,12 €</td>
     <td class="num"><span class="badge sobe "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 1.5 10 9H2z"/></svg>+2%</span></td>
     <td></td>
   </tr></tbody>
@@ -203,6 +211,68 @@
     </section>
   </div>
   <script>
+  // ===== A APP NO TELEMOVEL: service worker + Web Push =====
+  //
+  // Isto so vale servido do Mac (Tailscale). No GitHub Pages nao ha servidor do
+  // outro lado para guardar a inscricao, entao nem se tenta — e o SW registado
+  // num sitio nao serve o outro.
+  (function () {
+    if (location.hostname.indexOf('github.io') !== -1) return;
+    if (!('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+
+    function b64ParaBytes(s) {
+      var pad = '='.repeat((4 - (s.length % 4)) % 4);
+      var cru = atob((s + pad).replace(/-/g, '+').replace(/_/g, '/'));
+      var out = new Uint8Array(cru.length);
+      for (var i = 0; i < cru.length; i++) out[i] = cru.charCodeAt(i);
+      return out;
+    }
+
+    function inscreverPush() {
+      if (!('PushManager' in window) || !('Notification' in window)) return;
+      if (Notification.permission === 'denied') return;   // recusou: fim, sem insistir
+      // A ORDEM IMPORTA, e ja custou dois testes falhados no telemovel no
+      // projecto Carla: o pedido de autorizacao tem de ser a PRIMEIRA coisa
+      // dentro do toque. Se se esperar primeiro pelo service worker, o iPhone da
+      // o gesto por expirado e decide NAO perguntar — em silencio, sem erro.
+      var pedido = (Notification.permission === 'granted')
+        ? Promise.resolve('granted')
+        : Notification.requestPermission();
+      pedido.then(function (perm) {
+        if (perm !== 'granted') return;
+        return navigator.serviceWorker.ready.then(function (reg) {
+          return reg.pushManager.getSubscription().then(function (sub) {
+            if (sub) return sub;
+            return fetch('push/chave').then(function (r) { return r.json(); })
+              .then(function (d) {
+                if (!d || !d.chave) return null;
+                return reg.pushManager.subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey: b64ParaBytes(d.chave),
+                });
+              });
+          });
+        }).then(function (sub) {
+          if (!sub) return;
+          // Entrega-se SEMPRE a morada, mesmo repetida: se o ficheiro das
+          // inscricoes se perder no Mac, a proxima abertura repara-o sozinha.
+          return fetch('push/subscrever', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sub.toJSON()),
+          });
+        });
+      }).catch(function () {});
+    }
+
+    // 'click' e nao 'pointerdown': o WebKit do iPhone so da o gesto por valido
+    // no toque COMPLETO — com pointerdown o pedido era ignorado em silencio.
+    addEventListener('click', inscreverPush, { once: true });
+    // Se ja autorizou noutra visita, nao e preciso gesto nenhum.
+    if (('Notification' in window) && Notification.permission === 'granted') inscreverPush();
+  })();
+
   (function () {
     var TOPICO = 'sonar-comprar-fpx-4qv7zk9wm2hd8tjr3ycn6b';
     // Moedas ja na carteira agora — sem isto o modal nunca sabe que ja compraste
@@ -219,6 +289,9 @@
     var SUBIDA_MAX = 40;
     var QUEDA_MAX = 35;
     var VALIDADE_MS = 480 * 60000;
+    // A janela em que o sinal ainda e "para agir agora". Acima disto continua
+    // compravél (ate ao VALIDADE_MS) mas avisado — ver os tres estados abaixo.
+    var FRESCO_MS = 90 * 60000;
     var p = new URLSearchParams(location.search);
     var mint = p.get('comprar');
     if (!mint) return;
@@ -236,21 +309,43 @@
       .find(function (d) { return nota >= d.nota; });
     var eur = Math.min(degrau ? degrau.eur : 0, TETOS[gaveta] || 0);
     document.getElementById('c-eur').textContent = eur.toFixed(2).replace('.', ',') + ' €';
-    // PRAZO antes de tudo: um alerta velho nao deve sequer oferecer o botao.
-    // Pedido dele (04/08): de manha, um aviso da noite ja nao presta e ele
-    // podia comprar mal. O ouvinte recusa na mesma (rede de seguranca), mas o
-    // ecra tem de dizer a verdade sem ele ter de tentar.
+    // OS TRES ESTADOS DO SINAL (04/08, aprovado por ele).
+    //
+    // Um corte unico nao servia: ele disse que um sinal de ha 20 minutos ja nao
+    // vale, mas tambem foi decisao dele dar 8h de janela, porque dorme enquanto
+    // o mercado americano trabalha. Entao nao ha um corte — ha tres estados, e o
+    // ecra diz sempre em qual esta, sem ele ter de adivinhar:
+    //
+    //   fresco   ate FRESCO_MS      -> botao normal, e para agir agora
+    //   antigo   ate VALIDADE_MS    -> avisado; o botao vive, mas so se o preco
+    //                                  nao tiver fugido (a verificacao abaixo)
+    //   expirado depois disso       -> sem botao, ponto final
     var idadeMs = alertaEmMs > 0 ? Date.now() - alertaEmMs : 0;
     var expirado = idadeMs > VALIDADE_MS;
+    var antigo = !expirado && idadeMs > FRESCO_MS;
+    var estadoEl = document.getElementById('c-estado');
+
+    function idadeEmPalavras(ms) {
+      var min = Math.round(ms / 60000);
+      if (min < 60) return 'há ' + min + ' min';
+      return 'há ' + Math.round(min / 60) + 'h';
+    }
+
     if (expirado) {
-      document.getElementById('c-estado').textContent =
-        'Este alerta ja tem ' + Math.round(idadeMs / 3600000) + 'h — passou o prazo, nao vale a pena entrar agora.';
+      estadoEl.textContent =
+        'Sinal de ' + idadeEmPalavras(idadeMs) + ' — passou o prazo. Já não vale a pena entrar.';
+      estadoEl.className = 'comprar-estado expirado';
       btnConfirmar.disabled = true;
       btnConfirmar.textContent = 'Expirou';
     } else if (JA_TEM.indexOf(mint) !== -1) {
-      document.getElementById('c-estado').textContent = 'Ja tens esta moeda na carteira — comprada antes.';
+      estadoEl.textContent = 'Já tens esta moeda na carteira — comprada antes.';
       btnConfirmar.disabled = true;
-      btnConfirmar.textContent = 'Ja tens';
+      btnConfirmar.textContent = 'Já tens';
+    } else if (antigo) {
+      // Nao desliga o botao: desliga-o a verificacao de preco, se for caso disso.
+      estadoEl.textContent =
+        'Sinal de ' + idadeEmPalavras(idadeMs) + ' — confirma o preço antes de entrar.';
+      estadoEl.className = 'comprar-estado antigo';
     }
     fundo.hidden = false;
     function fechar() { fundo.hidden = true; history.replaceState(null, '', location.pathname); }
@@ -347,13 +442,41 @@
     document.getElementById('c-confirmar').onclick = function () {
       var btn = this, estado = document.getElementById('c-estado');
       btn.disabled = true;
-      estado.textContent = 'A enviar o pedido e a verificar a cotacao ao vivo...';
-      fetch('https://ntfy.sh/' + TOPICO, {
-        method: 'POST',
-        body: JSON.stringify({ mint: mint, nome: nome, gaveta: gaveta, nota: nota, alertaEmMs: alertaEmMs }),
-      }).then(function () {
-        estado.textContent = 'Comprado. Ja aparece na tua carteira.';
-        btn.textContent = 'Enviado';
+      estado.className = 'comprar-estado';
+      estado.textContent = 'A confirmar a cotação ao vivo…';
+
+      // POR ONDE VAI O TOQUE.
+      //
+      // Servido do Mac (Tailscale), fala-se com ele DIRECTAMENTE: e instantaneo
+      // e a resposta diz mesmo se a compra passou ou porque nao. No GitHub
+      // Pages nao ha ninguem do outro lado, entao mantem-se o caminho antigo
+      // pelo ntfy, que o ouvinte apanha — mais lento, mas funciona fora da
+      // tailnet, e essa e a unica razao para o Pages continuar a existir.
+      var pelaApp = location.hostname.indexOf('github.io') === -1;
+      var corpo = JSON.stringify({
+        mint: mint, nome: nome, gaveta: gaveta, nota: nota, alertaEmMs: alertaEmMs,
+      });
+      var envio = pelaApp
+        ? fetch('comprar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: corpo,
+          }).then(function (r) { return r.json(); })
+        : fetch('https://ntfy.sh/' + TOPICO, { method: 'POST', body: corpo })
+            .then(function () { return { ok: true }; });
+
+      envio.then(function (r) {
+        // O servidor local sabe MESMO o que aconteceu — se recusou, diz porque,
+        // e o ecra nao pode fingir que comprou.
+        if (r && r.ok === false) {
+          estado.textContent = r.motivo || 'Não deu para comprar.';
+          estado.className = 'comprar-estado expirado';
+          btn.textContent = 'Não comprei';
+          return;
+        }
+        estado.textContent = 'Comprado. Já aparece na tua carteira.';
+        btn.textContent = 'Comprado';
+        // (mensagem e texto do botao ja definidos acima)
         // Mostra a moeda JA, sem esperar pela republicacao do painel.
         //
         // Porque isto existe (queixa dele, 04/08: *"compro e nao actualiza
