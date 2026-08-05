@@ -146,7 +146,7 @@
 <body>
   <header class="topo">
     <h1>SONAR</h1>
-    <span class="modo">FANTASMA · 13:38</span>
+    <span class="modo">FANTASMA · 13:51</span>
   </header>
   <!-- O botao das notificacoes tem de ser VISIVEL e dizer em que estado esta.
        Na primeira versao a inscricao acontecia num toque em qualquer sitio do
@@ -157,8 +157,8 @@
   
     <section class="hero">
       <p class="rotulo">O que terias agora — dinheiro a fingir, preços a sério</p>
-      <p class="gigante num neutro">88,81 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−11.2%</span></p>
-      <p class="sub">começou com 100,00 € · −11,19 €</p>
+      <p class="gigante num neutro">88,80 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−11.2%</span></p>
+      <p class="sub">começou com 100,00 € · −11,20 €</p>
     </section>
 
     <article class="coluna">
@@ -167,7 +167,7 @@
       <h2>A tua carteira</h2>
       <p class="legenda">só compra quando TU tocas em Comprar; vende sozinha — é esta que conta para o exame</p>
     </header>
-    <p class="total num desce" hidden>88,81 €</p>
+    <p class="total num desce" hidden>88,80 €</p>
     <dl>
       <div><dt>Por gastar</dt><dd class="num">76,54 €</dd></div>
       <div><dt>Comprado — 2 moedas</dt><dd class="num">12,00 €</dd></div>
@@ -186,7 +186,7 @@
   </tr><tr class="linha desce">
     <td>linkrbot <span class="mudo">B</span></td>
     <td class="num">6,00 €</td>
-    <td class="num">5,92 €</td>
+    <td class="num">5,91 €</td>
     <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−1%</span></td>
     <td></td>
   </tr></tbody>
@@ -592,6 +592,16 @@
     document.getElementById('c-confirmar').onclick = function () {
       var btn = this, estado = document.getElementById('c-estado');
       btn.disabled = true;
+      // O BOTAO TEM DE DIZER O QUE ESTA A FAZER (05/08).
+      //
+      // Sem esta linha o botao ficava desactivado com o texto original
+      // ("Confirmar compra") e com opacity 0.5 por cima — ou seja, VERDE
+      // ESCURO a dizer o mesmo de antes. Queixa dele, palavra por palavra:
+      // *"apareceu nao seleccionavel, apareceu com um verde muito escuro ja a
+      // dizer confirmar a compra"*. Ele leu aquilo como compra feita, esperou,
+      // nada aconteceu, e saiu do ecra — quando na verdade o pedido ainda ia a
+      // caminho. Um botao que muda de aspecto sem mudar de palavra mente.
+      btn.textContent = 'A comprar…';
       estado.className = 'comprar-estado';
       estado.textContent = 'A confirmar a cotação ao vivo…';
 
@@ -610,16 +620,38 @@
       // cinzento para sempre e ele fica sem saber se comprou ou nao — aconteceu a
       // 04/08: *"fica ali parado, freeza"*. A causa foi corrigida do lado do
       // servidor (responde antes de notificar), mas o ecra do dinheiro nunca
-      // pode depender de o outro lado se portar bem. Ao fim de 20s desiste e diz.
+      // pode depender de o outro lado se portar bem.
+      //
+      // 8s, nao 20s (05/08). Vinte segundos e tempo a mais para ficar a olhar
+      // para um botao apagado: ele desiste e sai do ecra muito antes disso, e
+      // sai sem saber se comprou. Oito segundos ja e uma eternidade num pedido
+      // que normalmente responde em menos de um.
       var comPrazo = function (p) {
         return new Promise(function (resolve, reject) {
-          var caiu = setTimeout(function () { reject(new Error('demorou')); }, 20000);
+          var caiu = setTimeout(function () { reject(new Error('demorou')); }, 8000);
           p.then(function (v) { clearTimeout(caiu); resolve(v); },
                  function (e) { clearTimeout(caiu); reject(e); });
         });
       };
+      // A MORADA DO PEDIDO NAO PODE SER ADIVINHADA PELO BROWSER (05/08).
+      //
+      // ATENCAO: nada de crases neste comentario — este ficheiro inteiro e um
+      // template literal, e uma crase aqui fecha a string e parte a compilacao.
+      //
+      // fetch('comprar') e relativo: resolve-se contra a PASTA da pagina.
+      // Em /sonar/ da /sonar/comprar — certo. Mas em /sonar (sem a barra
+      // final) a pasta e a raiz, e o pedido ia parar a /comprar, que no
+      // Tailscale deste Mac e OUTRA aplicacao, no porto 8790. Testado hoje:
+      // devolve 401. O dinheiro dele batia a porta errada e o Sonar nem
+      // ficava a saber que alguem tinha carregado.
+      //
+      // O servidor passou a redirigir /sonar para /sonar/ (a cura de raiz, que
+      // arruma tambem o sw.js, o manifest e os icones). Isto aqui e o cinto por
+      // cima dos suspensorios: a morada e montada a mao, e para de depender de
+      // a pagina ter sido aberta com a barra certa.
+      var pasta = location.pathname.replace(/[^/]*$/, '');
       var envio = pelaApp
-        ? comPrazo(fetch('comprar', {
+        ? comPrazo(fetch(pasta + 'comprar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: corpo,
