@@ -146,7 +146,7 @@
 <body>
   <header class="topo">
     <h1>SONAR</h1>
-    <span class="modo">FANTASMA · 08:13</span>
+    <span class="modo">FANTASMA · 08:19</span>
   </header>
   <!-- O botao das notificacoes tem de ser VISIVEL e dizer em que estado esta.
        Na primeira versao a inscricao acontecia num toque em qualquer sitio do
@@ -157,8 +157,8 @@
   
     <section class="hero">
       <p class="rotulo">O que terias agora — dinheiro a fingir, preços a sério</p>
-      <p class="gigante num neutro">89,26 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−10.7%</span></p>
-      <p class="sub">começou com 100,00 € · −10,74 €</p>
+      <p class="gigante num neutro">88,93 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−11.1%</span></p>
+      <p class="sub">começou com 100,00 € · −11,07 €</p>
     </section>
 
     <article class="coluna">
@@ -167,12 +167,12 @@
       <h2>A tua carteira</h2>
       <p class="legenda">só compra quando TU tocas em Comprar; vende sozinha — é esta que conta para o exame</p>
     </header>
-    <p class="total num desce" hidden>89,26 €</p>
+    <p class="total num desce" hidden>88,93 €</p>
     <dl>
-      <div><dt>Por gastar</dt><dd class="num">73,14 €</dd></div>
-      <div><dt>Comprado — 2 moedas</dt><dd class="num">16,00 €</dd></div>
+      <div><dt>Por gastar</dt><dd class="num">82,54 €</dd></div>
+      <div><dt>Comprado — 1 moeda</dt><dd class="num">6,00 €</dd></div>
       <div class="cofre"><dt>Cofre — nunca volta a jogar</dt><dd class="num">0,00 €</dd></div>
-      <div><dt>Vendas de hoje</dt><dd class="num">5 · <span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>7,38 €</span></dd></div>
+      <div><dt>Vendas de hoje</dt><dd class="num">6 · <span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>7,98 €</span></dd></div>
     </dl>
     <p class="rotulo">Moedas que tens agora — ainda não vendidas</p>
     <table>
@@ -180,14 +180,8 @@
           <tbody id="pos-corpo"><tr class="linha sobe">
     <td>three.ws <span class="mudo">B</span></td>
     <td class="num">6,00 €</td>
-    <td class="num">6,42 €</td>
+    <td class="num">6,39 €</td>
     <td class="num"><span class="badge sobe "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 1.5 10 9H2z"/></svg>+7%</span></td>
-    <td></td>
-  </tr><tr class="linha desce">
-    <td>MF <span class="mudo">B</span></td>
-    <td class="num">10,00 €</td>
-    <td class="num">9,70 €</td>
-    <td class="num"><span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−3%</span></td>
     <td></td>
   </tr></tbody>
         </table>
@@ -198,6 +192,10 @@
       <button type="button" class="hist-btn" data-ordem="melhores">Melhores</button>
     </div>
     <ul id="hist-lista"><li>
+    <span>MF</span>
+    <span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−6%</span>
+    <span class="mudo">ficou parada — larguei o lugar · 05/08, 08:16</span>
+  </li><li>
     <span>Bonk</span>
     <span class="badge desce "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−7%</span>
     <span class="mudo">ficou parada — larguei o lugar · 05/08, 08:06</span>
@@ -397,10 +395,10 @@
     // (04/08) saem desta lista de proposito: caem no caminho normal, com botao
     // vivo e verificacao de preco ao vivo, que e o que um reforco precisa.
     var JA_TEM = [];
-    var REFORCAVEIS = ["FeMbDoX7R1Psc4GEcvJdsbNbZA3bfztcyDCatJVJpump","moonThZEkkTVoNB7v6YVCQiT56JYDZ1oN185ba3WizL"];
+    var REFORCAVEIS = ["FeMbDoX7R1Psc4GEcvJdsbNbZA3bfztcyDCatJVJpump"];
     // Historico completo para o toggle Recentes/Melhores — sem isto o
     // "Melhores" so via os ultimos 8 fechos, que raramente sao os melhores.
-    var HISTORICO = [{"nome":"TikTok","lucroEur":-3.48,"pct":-58,"motivo":"stop — travão de segurança","quandoMs":1785852745217,"quando":"04/08, 15:12"},{"nome":"Catjak","lucroEur":-2.44,"pct":-41,"motivo":"ficou parada — larguei o lugar","quandoMs":1785895051867,"quando":"05/08, 02:57"},{"nome":"Hoppy ","lucroEur":-2.8,"pct":-47,"motivo":"ficou parada — larguei o lugar","quandoMs":1785897963817,"quando":"05/08, 03:46"},{"nome":"bop","lucroEur":-1.11,"pct":-19,"motivo":"ficou parada — larguei o lugar","quandoMs":1785905047853,"quando":"05/08, 05:44"},{"nome":"KITTY","lucroEur":-0.37,"pct":-6,"motivo":"ficou parada — larguei o lugar","quandoMs":1785905047853,"quando":"05/08, 05:44"},{"nome":"Bonk","lucroEur":-0.66,"pct":-7,"motivo":"ficou parada — larguei o lugar","quandoMs":1785913600506,"quando":"05/08, 08:06"}];
+    var HISTORICO = [{"nome":"TikTok","lucroEur":-3.48,"pct":-58,"motivo":"stop — travão de segurança","quandoMs":1785852745217,"quando":"04/08, 15:12"},{"nome":"Catjak","lucroEur":-2.44,"pct":-41,"motivo":"ficou parada — larguei o lugar","quandoMs":1785895051867,"quando":"05/08, 02:57"},{"nome":"Hoppy ","lucroEur":-2.8,"pct":-47,"motivo":"ficou parada — larguei o lugar","quandoMs":1785897963817,"quando":"05/08, 03:46"},{"nome":"bop","lucroEur":-1.11,"pct":-19,"motivo":"ficou parada — larguei o lugar","quandoMs":1785905047853,"quando":"05/08, 05:44"},{"nome":"KITTY","lucroEur":-0.37,"pct":-6,"motivo":"ficou parada — larguei o lugar","quandoMs":1785905047853,"quando":"05/08, 05:44"},{"nome":"Bonk","lucroEur":-0.66,"pct":-7,"motivo":"ficou parada — larguei o lugar","quandoMs":1785913600506,"quando":"05/08, 08:06"},{"nome":"MF","lucroEur":-0.6,"pct":-6,"motivo":"ficou parada — larguei o lugar","quandoMs":1785914182443,"quando":"05/08, 08:16"}];
     // A aposta cresce com a nota (a escada da conviccao vem do config), travada
     // no teto da gaveta — assim o ecra diz o valor REAL que vai ser comprado.
     var ESCADA = [{"nota":85,"eur":22},{"nota":75,"eur":15},{"nota":65,"eur":10},{"nota":0,"eur":6}];
