@@ -146,7 +146,7 @@
 <body>
   <header class="topo">
     <h1>SONAR</h1>
-    <span class="modo">FANTASMA · 13:07</span>
+    <span class="modo">FANTASMA · 13:19</span>
   </header>
   <!-- O botao das notificacoes tem de ser VISIVEL e dizer em que estado esta.
        Na primeira versao a inscricao acontecia num toque em qualquer sitio do
@@ -157,8 +157,8 @@
   
     <section class="hero">
       <p class="rotulo">O que terias agora — dinheiro a fingir, preços a sério</p>
-      <p class="gigante num neutro">88,97 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−11.0%</span></p>
-      <p class="sub">começou com 100,00 € · −11,03 €</p>
+      <p class="gigante num neutro">88,85 €<span class="badge desce badge-hero"><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 10.5 2 3h8z"/></svg>−11.1%</span></p>
+      <p class="sub">começou com 100,00 € · −11,15 €</p>
     </section>
 
     <article class="coluna">
@@ -167,7 +167,7 @@
       <h2>A tua carteira</h2>
       <p class="legenda">só compra quando TU tocas em Comprar; vende sozinha — é esta que conta para o exame</p>
     </header>
-    <p class="total num desce" hidden>88,97 €</p>
+    <p class="total num desce" hidden>88,85 €</p>
     <dl>
       <div><dt>Por gastar</dt><dd class="num">76,54 €</dd></div>
       <div><dt>Comprado — 2 moedas</dt><dd class="num">12,00 €</dd></div>
@@ -180,8 +180,8 @@
           <tbody id="pos-corpo"><tr class="linha sobe">
     <td>three.ws <span class="mudo">B</span></td>
     <td class="num">6,00 €</td>
-    <td class="num">6,48 €</td>
-    <td class="num"><span class="badge sobe "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 1.5 10 9H2z"/></svg>+8%</span></td>
+    <td class="num">6,36 €</td>
+    <td class="num"><span class="badge sobe "><svg class="seta" viewBox="0 0 12 12" width="9" height="9" fill="currentColor" aria-hidden="true"><path d="M6 1.5 10 9H2z"/></svg>+6%</span></td>
     <td></td>
   </tr><tr class="linha desce">
     <td>linkrbot <span class="mudo">B</span></td>
@@ -264,6 +264,27 @@
     if (location.hostname.indexOf('github.io') !== -1) return;
     if (!('serviceWorker' in navigator)) return;
     navigator.serviceWorker.register('sw.js').catch(function () {});
+
+    // A APP OUVE O AVISO E NAVEGA-SE A SI PROPRIA (05/08).
+    //
+    // O outro lado desta correccao esta no sw.js. Resumo: no iOS a PWA fica
+    // residente em segundo plano, e o client.navigate() do service worker nao
+    // faz nada nem atira erro — a app so ganhava foco no ecra onde ele a tinha
+    // deixado, o dashboard. Palavras dele: *"quando abro, ele vai logo direto
+    // para o dashboard e nao me diz para eu comprar"*.
+    //
+    // (Sem crases neste comentario: isto vive dentro de um template literal, e
+    // uma crase aqui fecha a string a meio — foi o que aconteceu a primeira vez.)
+    //
+    // Mudar location.href de dentro da propria pagina funciona sempre. A
+    // pagina recarrega com ?comprar=<mint> e o ecra de compra abre pelo caminho
+    // normal, que ja estava a funcionar.
+    navigator.serviceWorker.addEventListener('message', function (e) {
+      var d = e.data || {};
+      if (d.tipo === 'ir' && typeof d.destino === 'string' && d.destino) {
+        location.href = d.destino;
+      }
+    });
 
     function b64ParaBytes(s) {
       var pad = '='.repeat((4 - (s.length % 4)) % 4);
